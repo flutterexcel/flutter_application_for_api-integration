@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_for_api_integration/Model/model.dart';
 import 'package:http/http.dart' as http;
@@ -32,30 +33,155 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  final DataTableSource _data = MyData();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text('Model in API'),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              PaginatedDataTable(
+                  columnSpacing: 40,
+                  rowsPerPage: 10,
+                  header: Center(child: Text("MY TABLE")),
+                  columns: [
+                    DataColumn(label: Text('Id')),
+                    DataColumn(label: Text('Name')),
+                    DataColumn(label: Text('price')),
+                    DataColumn(label: Text('BarCode'))
+                  ],
+                  source: _data)
+            ],
           ),
-          body: Center(
-            child: circular
-                ? CircularProgressIndicator()
-                : ListView.builder(
-                    itemCount: 6,
-                    itemBuilder: (BuildContext context, index) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                            backgroundImage:
-                                NetworkImage(data.data[index].avatar)),
-                        title: Text(data.data[index].firstName),
-                        subtitle: Text(data.data[index].lastName),
-                        trailing: Text(data.data[index].email),
-                      );
-                    }),
-          ),
-        ));
+        ),
+      ),
+    );
   }
 }
+
+class MyData extends DataTableSource {
+  final List<Map<String, dynamic>> _data = List.generate(
+      200,
+      (index) => {
+            "id": index,
+            "title": "Item $index",
+            "price": Random().nextInt(10000),
+            "barcode": Random().nextInt(1000),
+          });
+
+  @override
+  DataRow? getRow(int index) {
+    return DataRow(cells: [
+      DataCell(Text(_data[index]['id'].toString())),
+      DataCell(Text(_data[index]['title'])),
+      DataCell(Text(_data[index]['price'].toString())),
+      DataCell(Text(_data[index]['barcode'].toString()))
+    ]);
+  }
+
+  @override
+  // TODO: implement isRowCountApproximate
+  bool get isRowCountApproximate => false;
+
+  @override
+  // TODO: implement rowCount
+  int get rowCount => _data.length;
+
+  @override
+  // TODO: implement selectedRowCount
+  int get selectedRowCount => 0;
+}
+
+
+ // home: Scaffold(
+      //   //   resizeToAvoidBottomInset: true,
+      //   appBar: AppBar(
+      //     title: Text('Model in API'),
+      //     actions: [
+      //       circular ? CircularProgressIndicator() : Text(data.support.url)
+      //     ],
+      //   ),
+      //   body: SingleChildScrollView(
+      //     child: Center(
+      //       child: circular
+      //           ? CircularProgressIndicator()
+      //           : ListView.builder(
+      //               itemCount: data.data.length,
+      //               shrinkWrap: true,
+      //               itemBuilder: (BuildContext context, index) {
+      //                 return Container(
+      //                   height: 100,
+      //                   margin: EdgeInsets.all(3),
+      //                   decoration: const BoxDecoration(
+      //                     //borderRadius:  BorderRadius.all(10),
+      //                     boxShadow: [
+      //                       BoxShadow(
+      //                         color: Colors.black,
+      //                         offset: Offset(
+      //                           5.0,
+      //                           5.0,
+      //                         ), //Offset
+      //                         blurRadius: 10.0,
+      //                         spreadRadius: 2.0,
+      //                       ), //BoxShadow
+      //                       BoxShadow(
+      //                         color: Colors.white,
+      //                         offset: Offset(0.0, 0.0),
+      //                         blurRadius: 0.0,
+      //                         spreadRadius: 0.0,
+      //                       ), //BoxShadow
+      //                     ],
+      //                   ),
+      //                   width: MediaQuery.sizeOf(context).width,
+      //                   child: Container(
+      //                     width: 100,
+      //                     child: ListTile(
+      //                       leading: CircleAvatar(
+      //                           backgroundImage:
+      //                               NetworkImage(data.data[index].avatar)),
+      //                       title: Container(
+      //                           width: 30,
+      //                           child: Text(
+      //                             data.data[index].firstName,
+      //                             maxLines: 1,
+      //                           )),
+      //                       subtitle: Container(
+      //                           width: 30,
+      //                           child: Text(
+      //                             data.data[index].lastName,
+      //                             maxLines: 1,
+      //                           )),
+      //                       trailing: Container(
+      //                         height: 200,
+      //                         child: Column(
+      //                           children: [
+      //                             Container(
+      //                                 // width: 120,
+      //                                 child: Text(
+      //                               data.data[index].email,
+      //                               overflow: TextOverflow.ellipsis,
+      //                               softWrap: false,
+      //                               maxLines: 1,
+      //                             )),
+      //                             Container(
+      //                               height: 19,
+      //                               // width: 120,
+      //                               child: Text(
+      //                                 data.support.url,
+      //                                 overflow: TextOverflow.ellipsis,
+      //                                 softWrap: false,
+      //                                 maxLines: 1,
+      //                               ),
+      //                             )
+      //                           ],
+      //                         ),
+      //                       ),
+      //                     ),
+      //                   ),
+      //                 );
+      //               }),
+      //     ),
+      //   ),
+      // )
